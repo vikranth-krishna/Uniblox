@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "loadtest": "python3 loadtest/hammer.py"
   },
   "engines": {
     "node": ">=20"
