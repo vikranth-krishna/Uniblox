@@ -58,6 +58,15 @@ export function createApp(deps: AppDeps) {
 
   // ---- storefront ----
 
+  // Lets the demo UI describe the reward rule without hard coding it.
+  app.get("/config", (_req, res) => {
+    res.json({
+      couponEveryN: config.couponEveryN,
+      couponPercent: config.couponPercent,
+      paymentSimulation: config.paymentSimulation,
+    });
+  });
+
   app.get("/products", (_req, res) => {
     res.json({ products: [...store.products.values()] });
   });

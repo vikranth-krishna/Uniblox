@@ -1,1 +1,102 @@
-<!doctype html><title>Uniblox</title>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uniblox Store</title>
+  <meta name="description" content="Demo storefront for the Uniblox checkout and rewards API.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip" href="#products">Skip to products</a>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <span class="brand">Uniblox</span>
+      <nav aria-label="Sections">
+        <a href="#products">Shop</a>
+        <a href="#cart">Cart <span class="pill" id="nav-count">0</span></a>
+        <a href="#staff">Staff</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="banner" aria-labelledby="banner-title">
+    <div class="wrap banner-inner">
+      <div class="banner-copy">
+        <p class="eyebrow">Rewards</p>
+        <h1 id="banner-title">Every <span id="reward-n">5th</span> order unlocks <span id="reward-pct">10%</span> off</h1>
+        <p>Add a few things to the cart, check out, and watch the staff view hand out a coupon at the milestone.</p>
+        <a class="btn btn-accent" href="#products">Start shopping</a>
+      </div>
+      <div class="banner-art" aria-hidden="true">
+        <span class="shape s1"></span>
+        <span class="shape s2"></span>
+        <span class="shape s3"></span>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap layout">
+    <section id="products" aria-labelledby="products-title">
+      <h2 id="products-title">Products</h2>
+      <div class="grid" id="product-grid" aria-live="polite"></div>
+    </section>
+
+    <aside id="cart" class="panel" aria-labelledby="cart-title">
+      <h2 id="cart-title">Your cart</h2>
+      <div id="cart-body" aria-live="polite"></div>
+
+      <form id="checkout-form" class="stack" novalidate>
+        <div class="field">
+          <label for="coupon">Coupon code</label>
+          <input id="coupon" name="coupon" autocomplete="off" spellcheck="false" placeholder="SAVE10-XXXXXXXX">
+        </div>
+        <label class="check" id="decline-wrap" hidden>
+          <input type="checkbox" id="decline">
+          <span>Simulate a declined payment</span>
+        </label>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" id="checkout-btn">Check out</button>
+          <button class="btn btn-ghost" type="button" id="retry-btn" hidden>Retry same request</button>
+        </div>
+        <p class="hint">Retrying re-sends the same idempotency key, so you get the same order back instead of a second one.</p>
+      </form>
+
+      <div id="order-result"></div>
+    </aside>
+  </main>
+
+  <section id="staff" class="wrap staff" aria-labelledby="staff-title">
+    <div class="staff-head">
+      <h2 id="staff-title">Staff view</h2>
+      <div class="actions">
+        <button class="btn btn-primary" id="generate-btn" type="button">Generate coupon</button>
+        <button class="btn btn-ghost" id="refresh-btn" type="button">Refresh</button>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="cols">
+      <div>
+        <h3>Coupons</h3>
+        <div id="coupon-list" class="list"></div>
+      </div>
+      <div>
+        <h3>Orders</h3>
+        <div id="order-list" class="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="assertive" hidden></div>
+
+  <footer class="wrap foot">
+    <p>Demo front end for the Uniblox API. State lives in memory, restart the server to reset it.</p>
+  </footer>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
