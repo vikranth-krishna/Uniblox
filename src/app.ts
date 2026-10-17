@@ -4,11 +4,9 @@ import express, { type NextFunction, type Request, type Response } from "express
 import type { Config } from "./config.js";
 import { ApiError, validation } from "./errors.js";
 import { Metrics, silentLogger, type Logger } from "./observability.js";
-import { CartService, parseQuantity } from "./services/cart.js";
-import { CheckoutService } from "./services/checkout.js";
-import { CouponService } from "./services/coupons.js";
+import { parseQuantity } from "./services/cart.js";
+import { createServices } from "./services/index.js";
 import { FakePaymentGateway, type PaymentGateway } from "./services/payment.js";
-import { ReportService } from "./services/report.js";
 import { Store } from "./store.js";
 
 export interface AppDeps {
@@ -26,12 +24,9 @@ export function createApp(deps: AppDeps) {
   const store = deps.store ?? new Store();
   const logger = deps.logger ?? silentLogger;
   const metrics = deps.metrics ?? new Metrics();
-  const payment = deps.payment ?? new FakePaymentGateway();
+  const payment = deps.payment ?? new FakePaymentGateway(config.paymentDelayMs);
 
-  const carts = new CartService(store);
-  const coupons = new CouponService(store, config);
-  const checkout = new CheckoutService(store, coupons, payment);
-  const reports = new ReportService(store);
+  const { carts, coupons, checkout, reports } = createServices(store, config, payment);
 
   const app = express();
   app.disable("x-powered-by");

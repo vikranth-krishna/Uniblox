@@ -6,6 +6,8 @@ export interface Config {
   couponPercent: number;
   /** Lets a client force a payment decline with a header. Handy for demos, off in production. */
   paymentSimulation: boolean;
+  /** Artificial latency for the fake payment provider, useful for load tests. */
+  paymentDelayMs: number;
 }
 
 function intFromEnv(name: string, fallback: number): number {
@@ -34,5 +36,6 @@ export function loadConfig(): Config {
     couponEveryN: intFromEnv("COUPON_EVERY_N", 5),
     couponPercent: intFromEnv("COUPON_DISCOUNT_PERCENT", 10),
     paymentSimulation: process.env.NODE_ENV !== "production" && process.env.PAYMENT_SIMULATION !== "off",
+    paymentDelayMs: intFromEnv("PAYMENT_DELAY_MS", 0),
   });
 }
