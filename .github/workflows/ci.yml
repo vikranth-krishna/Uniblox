@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  load:
+    # Starts the built service and hammers it over HTTP with the Python script.
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - run: npm run build
+      - name: Start service
+        run: |
+          PORT=3000 PAYMENT_DELAY_MS=40 COUPON_EVERY_N=5 node dist/server.js &
+          for i in $(seq 1 20); do curl -sf localhost:3000/health && break; sleep 0.5; done
+      - name: Run invariant and load checks
+        run: python3 loadtest/hammer.py --base http://localhost:3000 --every-n 5
+
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t uniblox:ci .
+      - name: Smoke test the image
+        run: |
+          docker run -d --name app -p 3000:3000 uniblox:ci
+          for i in $(seq 1 20); do curl -sf localhost:3000/health && break; sleep 0.5; done
+          curl -sf localhost:3000/products
